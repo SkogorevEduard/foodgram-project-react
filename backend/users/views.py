@@ -44,7 +44,7 @@ class CustomUserViewSet(UserViewSet):
                 author=author
             ).exists():
                 raise exceptions.ValidationError(
-                    'Подписка не была оформлена, либо уже удалена.'
+                    'Подписка не была оформлена.'
                 )
             get_object_or_404(Follow, user=user, author=author).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)

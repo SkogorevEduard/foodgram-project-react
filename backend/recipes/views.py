@@ -54,7 +54,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 recipe=recipe
             ).exists():
                 raise exceptions.ValidationError(
-                    'Рецепта нет в избранном, либо он уже удален.'
+                    'Рецепта нет в избранном.'
                 )
             favorite = get_object_or_404(Favorite, user=user, recipe=recipe)
             favorite.delete()
@@ -75,7 +75,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 recipe=recipe
             ).exists():
                 raise exceptions.ValidationError(
-                    'Рецепт уже в списке покупок.'
+                    'Рецепт в списке покупок.'
                 )
             ShoppingList.objects.create(user=user, recipe=recipe)
             serializer = FollowRecipesShortSerializer(
@@ -89,7 +89,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 recipe=recipe
             ).exists():
                 raise exceptions.ValidationError(
-                    'Рецепта нет в списке покупок, либо он уже удален.'
+                    'Рецепта нет в списке покупок.'
                 )
             shopping_list = get_object_or_404(
                 ShoppingList,

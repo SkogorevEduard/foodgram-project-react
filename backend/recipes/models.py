@@ -70,9 +70,6 @@ class IngredientsInRecipes(models.Model):
         verbose_name = 'ингредиент'
         verbose_name_plural = 'Ингредиенты'
 
-    def __str__(self):
-        return f'В рецепте {self.recipe} есть ингредиент {self.ingredient}'
-
 
 class RecipeTag(models.Model):
     recipe = models.ForeignKey(
@@ -89,9 +86,6 @@ class RecipeTag(models.Model):
     class Meta:
         verbose_name = 'тег'
         verbose_name_plural = 'Теги'
-
-    def __str__(self):
-        return f'У рецепта {self.recipe} есть тег {self.tag}'
 
 
 class Favorite(models.Model):
@@ -119,9 +113,6 @@ class Favorite(models.Model):
             ),
         )
 
-    def __str__(self):
-        return f'Рецепт {self.recipe} в избранном у {self.user}'
-
 
 class ShoppingList(models.Model):
     user = models.ForeignKey(
@@ -147,6 +138,3 @@ class ShoppingList(models.Model):
                 name='unique_shopping_list'
             ),
         )
-
-    def __str__(self):
-        return f'Рецепт {self.recipe} в списке покупок у {self.user}'
