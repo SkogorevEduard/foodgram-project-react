@@ -19,7 +19,7 @@ class CustomUserViewSet(UserViewSet, AddAndDeleteViewMixin):
             detail=True)
     def subscribe(self, request, id):
         return self.add_and_delete(id, 'follow')
-    
+
     @action(
         detail=False,
         methods=('get',)
