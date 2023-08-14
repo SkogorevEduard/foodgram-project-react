@@ -1,5 +1,4 @@
 from django.db.models import Sum
-from django.shortcuts import get_object_or_404
 
 from .models import RecipeIngredient
 from ingredients.models import Ingredient
@@ -11,6 +10,7 @@ def recipe_amount_ingredients_bulk(recipes, ingredients):
         ingredient=Ingredient.objects.get(id=ingredient['id']),
         amount=ingredient['amount']
     ) for ingredient in ingredients])
+
 
 def get_shopping_list(user):
     buy_list = RecipeIngredient.objects.filter(

@@ -126,9 +126,9 @@ class RecipesCreateOrUpdateSerializer(serializers.ModelSerializer):
             )
         ingredients = [item['id'] for item in value]
         if len(set(ingredients)) != len(ingredients):
-                raise exceptions.ValidationError(
-                    'У рецепта не может быть одинаковые ингредиенты.'
-                )
+            raise exceptions.ValidationError(
+                'У рецепта не может быть одинаковые ингредиенты.'
+            )
         return value
 
     @transaction.atomic

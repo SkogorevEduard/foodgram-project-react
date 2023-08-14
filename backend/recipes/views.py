@@ -55,4 +55,3 @@ class RecipeViewSet(ModelViewSet, AddAndDeleteViewMixin):
             'attachment; filename=shopping-list.txt'
         )
         return response
-    

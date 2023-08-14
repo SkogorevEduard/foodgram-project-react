@@ -29,7 +29,9 @@ class RecipeFilter(FilterSet):
 
     def get_is_in_shopping_list(self, queryset, name, value):
         if self.request.user.is_authenticated and value:
-            return queryset.filter(shopping_cart_recipes__user=self.request.user)
+            return queryset.filter(
+                shopping_cart_recipes__user=self.request.user
+            )
         return queryset
 
     class Meta:
