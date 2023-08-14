@@ -1,15 +1,14 @@
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets
-
-from recipes.filters import IngredientFilter
+from rest_framework import viewsets, filters
 
 from .models import Ingredient
 from .serializers import IngredientSerializer
+from recipes.permissions import AdminOrReadOnly
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для работы с ингредиентами."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = (DjangoFilterBackend, )
-    filterset_class = IngredientFilter
+    permission_classes = (AdminOrReadOnly,)
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['^name']

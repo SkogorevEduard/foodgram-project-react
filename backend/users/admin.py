@@ -1,12 +1,6 @@
 from django.contrib import admin
 
-from .models import User, Follow
-
-
-@admin.register(Follow)
-class FollowAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'author')
-    search_fields = ('user', 'author')
+from .models import User
 
 
 @admin.register(User)

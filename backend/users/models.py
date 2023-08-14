@@ -36,6 +36,12 @@ class User(AbstractUser):
         blank=False,
         null=False,
     )
+    follow = models.ManyToManyField(
+        verbose_name='Подписка',
+        related_name='followers',
+        to='self',
+        symmetrical=False,
+    )
 
     class Meta:
         ordering = ['id']
@@ -44,29 +50,3 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
-
-
-class Follow(models.Model):
-    """Модель подписчик."""
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='follower',
-        verbose_name='Пользователь',
-    )
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='following',
-        verbose_name='Автор',
-    )
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'author'],
-                name='unique_user_author'
-            )
-        ]
-        verbose_name = 'Подписка'
-        verbose_name_plural = 'Подписки'

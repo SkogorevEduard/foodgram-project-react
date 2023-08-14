@@ -1,12 +1,13 @@
-from djoser.serializers import UserCreateSerializer, UserSerializer
+from djoser.serializers import UserSerializer as DjoserUserSerialiser
+from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 
 from recipes.models import Recipes
 
-from .models import Follow, User
+from .models import User
 
 
-class CustomUserSerializer(UserSerializer):
+class UserSerializer(DjoserUserSerialiser):
     """Сериализатор для получения информации о пользователе."""
     is_subscribed = serializers.SerializerMethodField(
         method_name='get_is_subscribed'
@@ -16,7 +17,7 @@ class CustomUserSerializer(UserSerializer):
         user = self.context['request'].user
         if user.is_anonymous:
             return False
-        return Follow.objects.filter(user=user, author=obj).exists()
+        return user.follow.filter(id=obj.id).exists()
 
     class Meta:
         model = User
@@ -33,7 +34,7 @@ class UserRegistrateSerializer(UserCreateSerializer):
                   'password')
 
 
-class FollowSerializer(CustomUserSerializer):
+class FollowSerializer(UserSerializer):
     """Сериализатор для работы с информацией о подписках."""
     recipes = serializers.SerializerMethodField(method_name='get_recipes')
     recipes_count = serializers.SerializerMethodField(
