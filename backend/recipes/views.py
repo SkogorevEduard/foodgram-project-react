@@ -33,9 +33,11 @@ class RecipeViewSet(ModelViewSet, AddAndDeleteViewMixin):
         user = self.request.user
         queryset = Recipes.objects.all()
         if user.is_authenticated:
-            favorited_subquery = user.favorite_recipes.filter(id=OuterRef('id')
+            favorited_subquery = user.favorite_recipes.filter(
+                id=OuterRef('id')
             )
-            in_shopping_cart_subquery = user.shopping_cart_recipes.filter(id=OuterRef('id')
+            in_shopping_cart_subquery = user.shopping_cart_recipes.filter(
+                id=OuterRef('id')
             )
             return queryset.annotate(
                 is_favorited=Exists(favorited_subquery)).annotate(
