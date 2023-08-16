@@ -1,6 +1,6 @@
 from djoser.views import UserViewSet
 from rest_framework.decorators import action
-from recipes.permissions import (OwnerUserOrReadOnly)
+from recipes.permissions import (AuthorOrReadOnly)
 
 from .serializers import (FollowSerializer)
 from .pagination import LimitPageNumberPagination
@@ -11,7 +11,7 @@ from rest_framework.status import HTTP_401_UNAUTHORIZED
 
 class CustomUserViewSet(UserViewSet, AddAndDeleteViewMixin):
     """Вьюсет для кастомной модели пользователя."""
-    permission_classes = (OwnerUserOrReadOnly,)
+    permission_classes = (AuthorOrReadOnly,)
     pagination_class = LimitPageNumberPagination
     add_serializer = FollowSerializer
 

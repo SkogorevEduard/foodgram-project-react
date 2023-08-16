@@ -12,8 +12,6 @@ from users.serializers import UserSerializer
 
 from .models import Recipes, RecipeIngredient
 
-from .services import (recipe_amount_ingredients_bulk)
-
 
 class Base64ImageField(serializers.ImageField):
     """Сериализатор для работы с картинками."""
@@ -66,30 +64,14 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField(
         method_name='get_ingredients'
     )
-    is_favorited = serializers.SerializerMethodField(
-        method_name='get_is_favorited'
-    )
-    is_in_shopping_cart = serializers.SerializerMethodField(
-        method_name='get_is_in_shopping_cart'
-    )
+    is_favorited = serializers.BooleanField(read_only=True)
+    is_in_shopping_cart = serializers.BooleanField(read_only=True)
     image = Base64ImageField(required=False)
 
     def get_ingredients(self, obj):
         ingredients = RecipeIngredient.objects.filter(recipe=obj)
         serializer = IngredientsInRecipesSerializer(ingredients, many=True)
         return serializer.data
-
-    def get_is_favorited(self, obj):
-        user = self.context['request'].user
-        if user.is_anonymous:
-            return False
-        return user.favorite_recipes.filter(id=obj.id).exists()
-
-    def get_is_in_shopping_cart(self, obj):
-        user = self.context['request'].user
-        if user.is_anonymous:
-            return False
-        return user.shopping_cart_recipes.filter(id=obj.id).exists()
 
     class Meta:
         model = Recipes
@@ -112,6 +94,13 @@ class RecipesCreateOrUpdateSerializer(serializers.ModelSerializer):
         validators=(MinValueValidator(1),)
     )
 
+    def recipe_amount_ingredients_bulk(self, recipes, ingredients):
+        RecipeIngredient.objects.bulk_create([RecipeIngredient(
+            recipe=recipes,
+            ingredient=Ingredient.objects.get(id=ingredient['id']),
+            amount=ingredient['amount']
+        ) for ingredient in ingredients])
+
     def validate_tags(self, value):
         if not value:
             raise exceptions.ValidationError(
@@ -127,7 +116,7 @@ class RecipesCreateOrUpdateSerializer(serializers.ModelSerializer):
         ingredients = [item['id'] for item in value]
         if len(set(ingredients)) != len(ingredients):
             raise exceptions.ValidationError(
-                'У рецепта не может быть одинаковые ингредиенты.'
+                'У рецепта не могут быть одинаковые ингредиенты.'
             )
         return value
 
@@ -138,7 +127,7 @@ class RecipesCreateOrUpdateSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         recipes = Recipes.objects.create(author=author, **validated_data)
         recipes.tags.set(tags)
-        recipe_amount_ingredients_bulk(recipes, ingredients)
+        self.recipe_amount_ingredients_bulk(recipes, ingredients)
         return recipes
 
     @transaction.atomic
@@ -149,7 +138,7 @@ class RecipesCreateOrUpdateSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients', None)
         if ingredients is not None:
             instance.ingredients.clear()
-            recipe_amount_ingredients_bulk(instance, ingredients)
+            self.recipe_amount_ingredients_bulk(instance, ingredients)
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
