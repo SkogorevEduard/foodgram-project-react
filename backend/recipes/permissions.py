@@ -1,4 +1,4 @@
-from rest_framework.permissions import (BasePermission)
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
 class AdminOrReadOnly(BasePermission):
@@ -12,7 +12,5 @@ class AdminOrReadOnly(BasePermission):
 
 class AuthorOrReadOnly(BasePermission):
     def has_object_permission(self, request, view, obj):
-        return (
-            request.method in ('GET',)
-            or (obj.author == request.user)
-        )
+        return (request.method in SAFE_METHODS
+                or obj.author == request.user)

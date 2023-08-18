@@ -1,4 +1,3 @@
-from django.db.models import Exists, OuterRef
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
@@ -31,19 +30,8 @@ class RecipeViewSet(ModelViewSet, AddAndDeleteViewMixin):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Recipes.objects.all()
-        if user.is_authenticated:
-            favorited_subquery = user.favorite_recipes.filter(
-                id=OuterRef('id')
-            )
-            in_shopping_cart_subquery = user.shopping_cart_recipes.filter(
-                id=OuterRef('id')
-            )
-            return queryset.annotate(
-                is_favorited=Exists(favorited_subquery)).annotate(
-                    is_in_shopping_cart=Exists(in_shopping_cart_subquery)
-            )
-        return queryset
+        return Recipes.objects.add_annotations(user).select_related(
+            'author').prefetch_related('tags')
 
     @action(
         methods=['get', 'post', 'delete'],

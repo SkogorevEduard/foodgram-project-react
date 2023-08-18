@@ -1,9 +1,28 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Exists, OuterRef
 
 from ingredients.models import Ingredient
 from tags.models import Tag
 from users.models import User
+
+
+class CustomQuerySet(models.QuerySet):
+    """Класс для добавления избранного и списка корзины."""
+
+    def add_annotations(self, user):
+        return self.annotate(
+            is_favorited=Exists(
+                user.favorite_recipes.filter(
+                    id=OuterRef('id')
+                )
+            ),
+            is_in_shopping_cart=Exists(
+                user.shopping_cart_recipes.filter(
+                    id=OuterRef('id')
+                )
+            ),
+        )
 
 
 class Recipes(models.Model):
@@ -38,13 +57,13 @@ class Recipes(models.Model):
     )
     favorites = models.ManyToManyField(
         User,
-        verbose_name='favorites',
+        verbose_name='Избранное',
         blank=True,
         related_name='favorite_recipes',
     )
     shopping_carts = models.ManyToManyField(
         User,
-        verbose_name='shopping_carts',
+        verbose_name='Список покупок',
         blank=True,
         related_name='shopping_cart_recipes',
     )
@@ -52,6 +71,8 @@ class Recipes(models.Model):
         validators=(MinValueValidator(1),),
         verbose_name='Время приготовления (в минутах)',
     )
+
+    objects = CustomQuerySet.as_manager()
 
     class Meta:
         ordering = ['-id']

@@ -1,12 +1,12 @@
 from djoser.views import UserViewSet
 from rest_framework.decorators import action
-from recipes.permissions import (AuthorOrReadOnly)
-
-from .serializers import (FollowSerializer)
-from .pagination import LimitPageNumberPagination
-from recipes.mixins import AddAndDeleteViewMixin
 from rest_framework.response import Response
 from rest_framework.status import HTTP_401_UNAUTHORIZED
+
+from .pagination import LimitPageNumberPagination
+from .serializers import FollowSerializer
+from recipes.mixins import AddAndDeleteViewMixin
+from recipes.permissions import AuthorOrReadOnly
 
 
 class CustomUserViewSet(UserViewSet, AddAndDeleteViewMixin):
