@@ -1,4 +1,5 @@
 # praktikum_new_diplom
-https://nicefoodgram.servebeer.com
-skogor123@yandex.ru
-1234567_
+ip - https://nicefoodgram.servebeer.com
+name admin - user
+email - skogor123@yandex.ru
+password - 1234567_
