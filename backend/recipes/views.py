@@ -30,6 +30,8 @@ class RecipeViewSet(ModelViewSet, AddAndDeleteViewMixin):
 
     def get_queryset(self):
         user = self.request.user
+        if user.is_anonymous:
+            return self.queryset
         return Recipes.objects.add_annotations(user).select_related(
             'author').prefetch_related('tags')
 
