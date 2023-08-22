@@ -27,7 +27,12 @@ class AddIngredientsSerializer(serializers.ModelSerializer):
     """Сериализатор для добавления ингредиентов."""
     id = serializers.IntegerField()
     amount = serializers.IntegerField(
-        validators=(MinValueValidator(1),)
+        validators=(
+            MinValueValidator(
+                1,
+                message='Количество ингридиента не может быть меньше 1'
+            ),
+        )
     )
 
     class Meta:
@@ -97,7 +102,12 @@ class RecipesCreateOrUpdateSerializer(serializers.ModelSerializer):
     ingredients = AddIngredientsSerializer(many=True)
     image = Base64ImageField()
     cooking_time = serializers.IntegerField(
-        validators=(MinValueValidator(1),)
+        validators=(
+            MinValueValidator(
+                1,
+                message='Время приготовления должно быть не меньше 1.'
+            ),
+        )
     )
 
     def recipe_amount_ingredients_bulk(self, recipes, ingredients):
